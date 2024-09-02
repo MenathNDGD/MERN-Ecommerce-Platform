@@ -9,11 +9,13 @@ import {
   ArrowRight,
   Loader,
   ShieldCheck,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useUserStore } from "../stores/useUserStore";
 
 const SignUpPage = () => {
-  const loading = false;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,9 +23,14 @@ const SignUpPage = () => {
     confirmPassword: "",
   });
 
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+
+  const { signup, loading } = useUserStore();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    signup(formData);
   };
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -109,7 +116,7 @@ const SignUpPage = () => {
                 </div>
                 <input
                   id="password"
-                  type="password"
+                  type={passwordVisible ? "text" : "password"}
                   required
                   value={formData.password}
                   onChange={(e) =>
@@ -118,6 +125,18 @@ const SignUpPage = () => {
                   className="block w-full px-3 py-2 pl-10 placeholder-gray-400 bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   placeholder="••••••••••••••••"
                 />
+                {formData.password && (
+                  <div
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                  >
+                    {passwordVisible ? (
+                      <EyeOff className="w-5 h-5 text-gray-400" />
+                    ) : (
+                      <Eye className="w-5 h-5 text-gray-400" />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -137,7 +156,7 @@ const SignUpPage = () => {
                 </div>
                 <input
                   id="confirmPassword"
-                  type="password"
+                  type={confirmPasswordVisible ? "text" : "password"}
                   required
                   value={formData.confirmPassword}
                   onChange={(e) =>
@@ -149,6 +168,20 @@ const SignUpPage = () => {
                   className="block w-full px-3 py-2 pl-10 placeholder-gray-400 bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   placeholder="••••••••••••••••"
                 />
+                {formData.confirmPassword && (
+                  <div
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                    onClick={() =>
+                      setConfirmPasswordVisible(!confirmPasswordVisible)
+                    }
+                  >
+                    {confirmPasswordVisible ? (
+                      <EyeOff className="w-5 h-5 text-gray-400" />
+                    ) : (
+                      <Eye className="w-5 h-5 text-gray-400" />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
