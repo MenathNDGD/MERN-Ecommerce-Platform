@@ -2,17 +2,29 @@ import React, { useState } from "react";
 
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { LogIn, Mail, Lock, ArrowRight, Loader } from "lucide-react";
+import {
+  LogIn,
+  Mail,
+  Lock,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader,
+} from "lucide-react";
+import { useUserStore } from "../stores/useUserStore";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const loading = true;
+  const [showPassword, setShowPassword] = useState(false);
+
+  const { login, loading } = useUserStore();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(email, password);
+    login(email, password);
   };
+
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <motion.div
@@ -22,7 +34,7 @@ const LoginPage = () => {
         transition={{ duration: 0.8 }}
       >
         <h2 className="mt-6 text-3xl font-extrabold text-center text-emerald-400">
-          Join Us Today
+          Access Your Account
         </h2>
       </motion.div>
 
@@ -70,13 +82,31 @@ const LoginPage = () => {
                 </div>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full px-3 py-2 pl-10 placeholder-gray-400 bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   placeholder="••••••••••••••••"
                 />
+                {password && (
+                  <div
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff
+                        className="w-5 h-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <Eye
+                        className="w-5 h-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
