@@ -39,7 +39,8 @@ export const getFeaturedProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, image, category } = req.body;
+    const { name, description, price, image, category, countInStock } =
+      req.body;
 
     let cloudinaryResponse = null;
 
@@ -57,6 +58,7 @@ export const createProduct = async (req, res) => {
         ? cloudinaryResponse.secure_url
         : "",
       category,
+      countInStock,
     });
 
     res.status(201).json(product);
@@ -121,7 +123,7 @@ export const getProductsByCategory = async (req, res) => {
   const { category } = req.params;
   try {
     const products = await Product.find({ category });
-    res.json(products);
+    res.json({ products });
   } catch (error) {
     console.log("Error in getProductsByCategory controller", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
