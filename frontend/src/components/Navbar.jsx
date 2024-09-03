@@ -1,12 +1,21 @@
 import React from "react";
 
-import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
+import {
+  ShoppingCart,
+  UserPlus,
+  LogIn,
+  LogOut,
+  Lock,
+  Home,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
+import { useCartStore } from "../stores/useCartStore";
 
 const Navbar = () => {
   const { user, logout } = useUserStore();
   const isAdmin = user?.role === "admin";
+  const { cart } = useCartStore();
 
   return (
     <header className="fixed top-0 left-0 z-40 w-full transition-all duration-300 bg-gray-900 border-b shadow-lg bg-opacity-90 backdrop-blur-md border-emerald-800">
@@ -19,11 +28,12 @@ const Navbar = () => {
             E-Market Hub
           </Link>
 
-          <nav className="flex flex-wrap items-center gap-4">
+          <nav className="flex flex-wrap items-center gap-8 text-lg font-semibold">
             <Link
               to={"/"}
-              className="text-gray-300 transition duration-300 ease-in-out hover:text-emerald-400"
+              className="flex items-center text-gray-300 transition duration-300 ease-in-out hover:text-emerald-400"
             >
+              <Home className="mr-1 group-hover:text-emerald-400" size={20} />
               Home
             </Link>
 
@@ -37,15 +47,19 @@ const Navbar = () => {
                   size={20}
                 />
                 <span className="hidden sm:inline">Cart</span>
-                <span className="absolute px-2 text-white rounded-full -top-2 -left-2 bg-emerald-500 py-0.5 text-xs group-hover:bg-emerald-400 transition duration-300 ease-in-out">
-                  3
-                </span>
+                {cart.length > 0 && (
+                  <>
+                    <span className="absolute px-2 text-white rounded-full -top-2 -left-2 bg-emerald-500 py-0.5 text-xs group-hover:bg-emerald-400 transition duration-300 ease-in-out">
+                      {cart.length}
+                    </span>
+                  </>
+                )}
               </Link>
             )}
 
             {isAdmin && (
               <Link
-                to={"/dashboard"}
+                to={"/secret-dashboard"}
                 className="flex items-center px-4 py-2 font-medium text-white transition duration-300 ease-in-out rounded-md bg-emerald-700 hover:bg-emerald-600"
               >
                 <Lock className="inline-block mr-1" size={18} />
