@@ -6,11 +6,13 @@ import { useProductStore } from "../stores/useProductStore";
 const categories = [
   "Jeans",
   "T-Shirts",
+  "Shirts",
   "Shoes",
   "Glasses",
   "Jackets",
   "Suits",
   "Bags",
+  "Accessories",
 ];
 
 const CreateProductForm = () => {
