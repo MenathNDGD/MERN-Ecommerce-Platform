@@ -5,8 +5,9 @@ import {
   UserPlus,
   LogIn,
   LogOut,
-  Lock,
   Home,
+  LayoutDashboard,
+  Store,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
@@ -25,6 +26,7 @@ const Navbar = () => {
             to={"/"}
             className="flex items-center space-x-2 text-2xl font-bold text-emerald-400"
           >
+            <Store className="mr-2" size={30}/>
             E-Market Hub
           </Link>
 
@@ -34,7 +36,7 @@ const Navbar = () => {
               className="flex items-center text-gray-300 transition duration-300 ease-in-out hover:text-emerald-400"
             >
               <Home className="mr-1 group-hover:text-emerald-400" size={20} />
-              Home
+              <span className="hidden sm:inline">Home</span>
             </Link>
 
             {user && (
@@ -62,7 +64,7 @@ const Navbar = () => {
                 to={"/secret-dashboard"}
                 className="flex items-center px-4 py-2 font-medium text-white transition duration-300 ease-in-out rounded-md bg-emerald-700 hover:bg-emerald-600"
               >
-                <Lock className="inline-block mr-1" size={18} />
+                <LayoutDashboard className="inline-block mr-1" size={18} />
                 <span className="hidden sm:inline">Dashboard</span>
               </Link>
             )}
