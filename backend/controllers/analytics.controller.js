@@ -31,7 +31,7 @@ export const getAnalyticsData = async () => {
 
 export const getDailySalesData = async (startDate, endDate) => {
   try {
-    const dailySalesDate = await Order.aggregate([
+    const dailySalesData = await Order.aggregate([
       {
         $match: {
           createdAt: {
@@ -55,7 +55,7 @@ export const getDailySalesData = async (startDate, endDate) => {
     const dateArray = getDatesInRange(startDate, endDate);
 
     return dateArray.map((date) => {
-      const foundData = dailySalesDate.find((item) => item._id === date);
+      const foundData = dailySalesData.find((item) => item._id === date);
 
       return {
         date,
