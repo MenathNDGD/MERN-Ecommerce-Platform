@@ -3,14 +3,37 @@ import { motion } from "framer-motion";
 import { useCartStore } from "../stores/useCartStore";
 import { Link } from "react-router-dom";
 import { MoveRight } from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "../lib/axios";
+
+const stripePromise = loadStripe(
+  "pk_test_51PvO20EShRVD4pEF5xmFtHdYOjUkgGRPzIhZo7kVKBM35I13157lUrakiAPMWOOq28qZfJtRDhKZ7gTsBt4W4pR000jU7B534G"
+);
 
 const OrderSummary = () => {
-  const { total, subTotal, coupon, isCouponApplied } = useCartStore();
+  const { total, subTotal, coupon, isCouponApplied, cart } = useCartStore();
   const savings = subTotal - total;
 
   const formattedSubTotal = subTotal.toFixed(2);
   const formattedTotal = total.toFixed(2);
-  const formattedSavings = savings.toFixed;
+  const formattedSavings = savings.toFixed(2);
+
+  const handlePayment = async () => {
+		const stripe = await stripePromise;
+		const res = await axios.post("/payments/create-checkout-session", {
+			products: cart,
+			couponCode: coupon ? coupon.code : null,
+		});
+
+		const session = res.data;
+		const result = await stripe.redirectToCheckout({
+			sessionId: session.id,
+		});
+
+		if (result.error) {
+			console.error("Error:", result.error);
+		}
+	};
   return (
     <motion.div
       className="p-4 space-y-4 bg-gray-800 border border-gray-700 rounded-lg shadow-sm sm:p-6"
@@ -23,7 +46,7 @@ const OrderSummary = () => {
         <div className="space-y-2">
           <dl className="flex items-center justify-between gap-4">
             <dt className="text-base font-normal text-gray-300">
-              Original price
+              Original Price
             </dt>
             <dd className="text-base font-medium text-white">
               $ {formattedSubTotal}
@@ -61,6 +84,7 @@ const OrderSummary = () => {
           className="flex w-full items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={handlePayment}
         >
           Proceed to Checkout
         </motion.button>
