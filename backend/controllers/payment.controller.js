@@ -1,5 +1,6 @@
 import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
+import User from "../models/user.model.js";
 import { stripe } from "../lib/stripe.js";
 
 export const createCheckoutSession = async (req, res) => {
@@ -27,6 +28,7 @@ export const createCheckoutSession = async (req, res) => {
           },
           unit_amount: amount,
         },
+        quantity: product.quantity || 1,
       };
     });
 
@@ -89,6 +91,7 @@ export const checkoutSuccess = async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.payment_status === "paid") {
+      // Deactivate coupon if used
       if (session.metadata.couponCode) {
         await Coupon.findOneAndUpdate(
           {
@@ -110,18 +113,27 @@ export const checkoutSuccess = async (req, res) => {
           quantity: product.quantity,
           price: product.price,
         })),
-        totalAmount: session.amount_total / 100, //INFO: Convert cents to dollars
+        totalAmount: session.amount_total / 100, // Convert cents to dollars
         stripeSessionId: sessionId,
       });
 
       await newOrder.save();
 
+      //INFO: Clear the user's cart items in the database
+      await User.findByIdAndUpdate(session.metadata.userId, {
+        cartItems: [], // Clear the cart items in the user's collection
+      });
+
       res.status(200).json({
         success: true,
         message:
-          "Payment successful. Order created and Coupon deactivated if used.",
+          "Payment successful. Order created, cart cleared, and coupon deactivated if used.",
         orderId: newOrder._id,
       });
+    } else {
+      res
+        .status(400)
+        .json({ success: false, message: "Payment not completed" });
     }
   } catch (error) {
     console.error("Error processing successful checkout:", error);
@@ -142,6 +154,7 @@ async function createStripeCoupon(discountPercentage) {
 }
 
 async function createNewCoupon(userId) {
+  await Coupon.findOneAndDelete({ userId });
   const newCoupon = new Coupon({
     code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
     discountPercentage: 10,
